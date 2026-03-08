@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 
 
 class Identity:
@@ -27,6 +28,10 @@ class IdentityMixin:
 
     def identity_sql(self) -> tuple[str, tuple]:
         return f"GENERATED {self.identity} AS IDENTITY", ()
+
+    @cached_property
+    def referenced_fields(self):
+        return frozenset([self.name])
 
 
 class IdentityField(IdentityMixin, models.IntegerField):

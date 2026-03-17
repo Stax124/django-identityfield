@@ -28,19 +28,19 @@ def create_schema(django_db_blocker):
 def last_sequence():
     with connection.cursor() as cursor:
         cursor.execute(
-            f"SELECT last_value, is_called FROM {IdentityModel._meta.db_table}_sequence_seq"  # ty: ignore[unresolved-attribute]
+            f"SELECT last_value, is_called FROM {IdentityModel._meta.db_table}_sequence_seq"
         )
         val, is_called = cursor.fetchone()
         return val if is_called else val - 1
 
 
-@pytest.mark.db
+# @pytest.mark.django_db
 def test_insert(last_sequence):
     assert IdentityModel.objects.create().sequence == last_sequence + 1
     assert IdentityModel.objects.create().sequence == last_sequence + 2
 
 
-@pytest.mark.db
+# @pytest.mark.django_db
 def test_update(last_sequence):
     im = IdentityModel.objects.create()
     assert im.sequence == last_sequence + 1
@@ -55,7 +55,7 @@ def test_update(last_sequence):
     assert IdentityModel.objects.create().sequence == last_sequence + 2
 
 
-@pytest.mark.db
+# @pytest.mark.django_db
 def test_delete(last_sequence):
     im = IdentityModel.objects.create()
     assert im.sequence == last_sequence + 1

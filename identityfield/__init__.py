@@ -1,5 +1,12 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.utils.functional import cached_property
+
+if TYPE_CHECKING:
+    _MixinBase = models.Field
+else:
+    _MixinBase = object
 
 
 class Identity:
@@ -7,7 +14,7 @@ class Identity:
     BY_DEFAULT = "BY DEFAULT"
 
 
-class IdentityMixin:
+class IdentityMixin(_MixinBase):
     generated = True
 
     def __init__(self, identity=Identity.BY_DEFAULT, *args, **kwargs):

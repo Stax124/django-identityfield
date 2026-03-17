@@ -7,7 +7,8 @@ repos:
     - id: ruff-format
 - repo: local
   hooks:
-    - id: ty
-      name: ty check
-      entry: ty check
+    - id: tox
+      name: tox check
+      entry: uvx tox
       language: system
+      pass_filenames: false

@@ -16,6 +16,7 @@ dev = [
     "pytest>=8.4.2",
     "pytest-django>=4.11.1",
     "testcontainers[postgres]>=4.13.1",
+    "django-stubs>=6.0",
 ]
 
 [project.urls]

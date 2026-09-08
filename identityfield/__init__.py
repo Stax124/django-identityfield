@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from django.db import models
+from django.db.models import Value
 from django.utils.functional import cached_property
 
 if TYPE_CHECKING:
@@ -15,7 +16,10 @@ class Identity:
 
 
 class IdentityMixin(_MixinBase):
+    # `generated` makes Django treat this like a `GeneratedField`, so the rest of that interface has to be answered too.
     generated = True
+    # Required for the `alter_field` precheck.
+    db_persist = True
 
     def __init__(self, identity=Identity.BY_DEFAULT, *args, **kwargs):
         self.identity = identity
@@ -33,12 +37,30 @@ class IdentityMixin(_MixinBase):
     def db_returning(self):
         return True
 
+    @property
+    def expression(self):
+        # Depends on nothing. Django walks the expression of every generated
+        # field when a sibling field is removed, so anything referencing other
+        # fields here would block dropping them.
+        return Value(None, output_field=self)
+
+    @property
+    def output_field(self):
+        return self
+
+    def generated_sql(self, connection):
+        # Only reached by the `alter_field` precheck, which compares old and new
+        # to reject in-place changes; the DDL itself comes from `identity_sql()`.
+        return self.identity_sql()
+
     def identity_sql(self) -> tuple[str, tuple]:
         return f"GENERATED {self.identity} AS IDENTITY", ()
 
     @cached_property
     def referenced_fields(self):
-        return frozenset([self.name])
+        # Django intersects this with the fields an UPDATE touches to decide what
+        # to RETURNING. An identity value never changes on UPDATE.
+        return frozenset()
 
 
 class IdentityField(IdentityMixin, models.IntegerField):

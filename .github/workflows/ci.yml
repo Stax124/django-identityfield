@@ -25,10 +25,10 @@ jobs:
       matrix:
         toxenv: [ruff, ty]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           enable-cache: true
 
@@ -50,10 +50,10 @@ jobs:
           - { toxenv: py314-django52, python: "3.14", django: "5.2" }
           - { toxenv: py314-django60, python: "3.14", django: "6.0" }
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10.0.1
         with:
           enable-cache: true
 
